@@ -5,23 +5,49 @@ import (
 	"math"
 )
 
+const inflation = 2.5
+
 func main() {
-	const inflation = 2.5
 
 	var investmentAmount float64
 	var expectedReturnRate float64
 	var years float64
 
-	fmt.Print("Provide investment amount: ")
+	outPutText("Provide investment amount: ")
 	var _, _ = fmt.Scan(&investmentAmount)
-	fmt.Print("Provide expected return rate: ")
+	outPutText("Provide expected return rate: ")
 	var _, _ = fmt.Scan(&expectedReturnRate)
-	fmt.Print("Provide period in years: ")
+	outPutText("Provide period in years: ")
 	var _, _ = fmt.Scan(&years)
 
-	futureValue := investmentAmount * math.Pow(1 + expectedReturnRate / 100, years)
-	futureRealValue := futureValue / math.Pow(1 + inflation / 100, years)
+	futureValue, futureRealValue := calcFutureValue(
+		investmentAmount,
+		expectedReturnRate,
+		years,
+	)
 
-	fmt.Println("Future invest value:", futureValue)
-	fmt.Println("Future invest value after inflation:", futureRealValue)
+	// first way of printing values
+	// fmt.Println("Future invest value:", futureValue)
+	// fmt.Println("Future invest value after inflation:", futureRealValue)
+
+	// second way of printing values
+	// fmt.Printf("Future Value: %.0f\n", futureValue)
+	// fmt.Printf("Future Value (after inflation): %.1f\n", futureRealValue)
+
+	// third way of printing values
+	formattedFV := fmt.Sprintf("Future Value: %.0f\n", futureValue)
+	formattedRFV := fmt.Sprintf("Future Value (after inflation): %.1f\n", futureRealValue)
+
+	fmt.Print(formattedFV, formattedRFV)
+}
+
+func outPutText(text string) {
+	fmt.Print(text)
+}
+
+func calcFutureValue(invAmount, expReturnRate, years float64) (float64, float64) {
+	fv := invAmount * math.Pow(1 + expReturnRate / 100, years)
+	rfv := fv / math.Pow(1 + inflation / 100, years)
+	
+	return fv, rfv
 }

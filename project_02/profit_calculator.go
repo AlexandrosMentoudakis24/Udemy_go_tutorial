@@ -1,27 +1,64 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
+
+func writeResultsToFile(ebt, profit, ratio float64) {
+	result := fmt.Sprintf("EBT: %.2f\nPROFIT: %.2f\nRATIO: %.2f", ebt, profit, ratio)
+
+	os.WriteFile("results.txt", []byte(result), 0644)
+}
 
 func main() {
 	var revenue float64
 	var expenses float64
 	var taxRate float64
 	
-	fmt.Print("Provide revenue: ")
-	var _, _ = fmt.Scan(&revenue)
+	revenue = getValueFromConsole("Provide revenue: ")
+	expenses = getValueFromConsole("Provide expenses: ")
+	taxRate = getValueFromConsole("Provide tax rate: ")
 
-	fmt.Print("Provide expenses: ")
-	var _, _ = fmt.Scan(&expenses)
+	earningsBeforeTax, profit, ratio := calcAllValues(
+		revenue,
+		expenses,
+		taxRate,
+	)
 
-	fmt.Print("Provide taxRate: ")
-	var _, _ = fmt.Scan(&taxRate)
+	writeResultsToFile(earningsBeforeTax, profit, ratio)
 
-	earningsBeforeTax := revenue - expenses
-	earningsAfterTax := (revenue - expenses) * (taxRate / 100)
+	outPutTextAndValue("Earnings before tax: ", earningsBeforeTax)
+	outPutTextAndValue("Earnings after tax: ", profit)
+	outPutTextAndValue("Ratio: ", ratio)
+}
 
-	ratio := earningsBeforeTax / earningsAfterTax
+func getValueFromConsole(prompt string) float64 {
+	currentValue := 0.0
 
-	fmt.Println("Earnings before tax: ", earningsBeforeTax)
-	fmt.Println("Earnings after tax: ", earningsAfterTax)
-	fmt.Println("Ratio: ", ratio)
+	for {
+		fmt.Print(prompt)
+		fmt.Scan(&currentValue)
+
+		if currentValue > 0.0 {
+			return currentValue
+		}
+
+		fmt.Println("Invalid input, try again!")
+	}
+
+}
+
+func calcAllValues(revenue, expenses, taxRate float64) (float64, float64, float64) {
+	ebt := revenue - expenses
+	profit := ebt * (1 - taxRate / 100)
+	ratio := ebt / profit
+
+	return ebt, profit, ratio
+}
+
+func outPutTextAndValue(prompt string, value float64)  {
+	formattedValue := fmt.Sprintf("%v: %.2f", prompt, value)
+
+	fmt.Println(formattedValue)
 }
